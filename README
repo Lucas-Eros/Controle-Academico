@@ -1,0 +1,18 @@
+# Controle Acadêmico - Projeto Java
+
+Este é um projeto Java simples de controle acadêmico com testes usando o framework Mockito.
+
+## Pré-requisitos
+
+Certifique-se de ter as seguintes ferramentas e tecnologias instaladas em seu ambiente de desenvolvimento:
+
+- Java Development Kit (JDK) 8 ou superior
+- Maven
+- Uma IDE Java, como Eclipse, IntelliJ IDEA ou Visual Studio Code (opcional)
+
+## Configuração do Projeto
+
+1. Clone este repositório para o seu ambiente de desenvolvimento:
+
+   ```bash
+   git clone https://github.com/seu-usuario/controle-academico.git
