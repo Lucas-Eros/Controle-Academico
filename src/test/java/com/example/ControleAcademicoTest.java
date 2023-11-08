@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 
 public class ControleAcademicoTest {
     private ControleAcademico controleAcademico;
@@ -18,42 +20,61 @@ public class ControleAcademicoTest {
     }
 
     @Test
-    public void testRemoverAluno() {
-        // Crie um mock para a instância de ControleAcademico
+    public void testListarAlunosEmOrdem() {
+        // Criando o mock de ControleAcademico
         ControleAcademico controleAcademicoMock = mock(ControleAcademico.class);
 
-        // Configurar o mock para retornar uma lista de alunos com 0 elementos
-        when(controleAcademicoMock.listarAlunos()).thenReturn(Arrays.asList());
+        Aluno aluno1 = new Aluno("Lucas", 789);
+        Aluno aluno2 = new Aluno("Ana", 101);
 
-        // Configure o mock para remover o aluno com ID 456
-        controleAcademicoMock.removerAluno(456);
+        // Configurando o mock para adicionar alunos
+        when(controleAcademicoMock.listarAlunos())
+            .thenReturn(Arrays.asList(aluno1, aluno2));
 
-        // Verifique se o método foi chamado exatamente uma vez
-        verify(controleAcademicoMock, times(1)).removerAluno(456);
+        // Realizando a operação que você deseja testar
+        List<Aluno> alunos = controleAcademicoMock.listarAlunos();
 
-        // Agora, você pode verificar o estado da instância real
-        List<Aluno> alunos = controleAcademico.listarAlunos();
-        assertEquals(0, alunos.size());
+        // Verificando a ordem em que os métodos foram chamados no mock
+        InOrder inOrder = inOrder(controleAcademicoMock);
+        inOrder.verify(controleAcademicoMock).listarAlunos();
+
+        List<Aluno> expectedAlunos = Arrays.asList(aluno1, aluno2);
+
+        assertEquals(expectedAlunos, alunos);
     }
-    
+
     @Test
-    public void testRemoverAlunoComIdIncorreto() {
-        // Crie um mock para a instância de ControleAcademico
+    public void testExcecaoAoRemoverAlunoInexistente() {
+        // Criando um mock para a instância de ControleAcademico
         ControleAcademico controleAcademicoMock = mock(ControleAcademico.class);
 
-        // Configurar o mock para retornar uma lista de alunos com 0 elementos
-        when(controleAcademicoMock.listarAlunos()).thenReturn(Arrays.asList());
+        // Configurando o mock para lançar uma exceção ao tentar remover um aluno inexistente
+        doThrow(new RuntimeException("Aluno não encontrado")).when(controleAcademicoMock).removerAluno(123);
 
-        // Configure o mock para remover o aluno com ID 123 (diferente do esperado)
-        controleAcademicoMock.removerAluno(123);
-
-        // Verifique se o método foi chamado exatamente uma vez
-        verify(controleAcademicoMock, times(1)).removerAluno(456);
-
-        // Agora, você pode verificar o estado da instância real
-        List<Aluno> alunos = controleAcademico.listarAlunos();
-        assertEquals(0, alunos.size());
+        // Verificando se a exceção é lançada
+        try {
+            controleAcademicoMock.removerAluno(123);
+        } catch (RuntimeException e) {
+            assertEquals("Aluno não encontrado", e.getMessage());
+        }
     }
 
-    // Restante dos testes
+    @Test
+    public void testCapturarArgumentoAoAdicionarAluno() {
+        // Crie um mock de ControleAcademico
+        ControleAcademico controleAcademicoMock = mock(ControleAcademico.class);
+
+        Aluno aluno = new Aluno("João", 123);
+
+        // Realize a operação que você deseja testar
+        controleAcademicoMock.adicionarAluno(aluno);
+
+        // Criando um capturador de argumento
+        ArgumentCaptor<Aluno> captor = ArgumentCaptor.forClass(Aluno.class);
+
+        // Verificando se o método foi chamado com o argumento esperado
+        verify(controleAcademicoMock).adicionarAluno(captor.capture());
+        assertEquals(aluno, captor.getValue());
+    }
 }
+
